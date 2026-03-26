@@ -1,0 +1,523 @@
+<!-- modified -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>St. Joseph Youth Association</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Georgia', serif; background: #FAF6F0; color: #111827; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+    .hero-img-wrap { width: 100%; max-width: 680px; margin: 0 auto; }
+    @media(max-width:640px){ .desktop-nav{display:none!important} .hamburger{display:block!important} .two-col{flex-direction:column!important} }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const C = {
+      navy:"#0B2545",blue:"#1363DF",sky:"#4FC3F7",earth:"#8B5E3C",
+      cream:"#FAF6F0",sand:"#E8D5B7",gold:"#C9972B",white:"#FFFFFF",
+      muted:"#6B7280",dark:"#111827",
+    };
+
+    function useInView(ref, threshold=0.15){
+      const [v,setV]=useState(false);
+      useEffect(()=>{
+        const o=new IntersectionObserver(([e])=>{if(e.isIntersecting)setV(true);},{threshold});
+        if(ref.current)o.observe(ref.current);
+        return()=>o.disconnect();
+      },[]);
+      return v;
+    }
+
+    function AnimCount({target,suffix="",duration=2000}){
+      const [n,setN]=useState(0);const ref=useRef();const v=useInView(ref);
+      useEffect(()=>{
+        if(!v)return;let c=0;const s=Math.ceil(target/(duration/16));
+        const id=setInterval(()=>{c+=s;if(c>=target){setN(target);clearInterval(id);}else setN(c);},16);
+        return()=>clearInterval(id);
+      },[v]);
+      return React.createElement('span',{ref},n.toLocaleString()+suffix);
+    }
+
+    function FadeIn({children,delay=0,className="",style={}}){
+      const ref=useRef();const v=useInView(ref);
+      return(<div ref={ref} className={className} style={{...style,opacity:v?1:0,transform:v?"translateY(0)":"translateY(32px)",transition:`opacity 0.7s ease ${delay}ms,transform 0.7s ease ${delay}ms`}}>{children}</div>);
+    }
+
+    // IMAGE PLACEHOLDER
+    // To replace: <img src="images/yourfile.jpg" alt="..." style={{width:"100%",height:NNpx,objectFit:"cover",borderRadius:12}} />
+    function ImgBox({alt,h=220}){
+      return(
+        <div style={{height:h,background:`linear-gradient(135deg,${C.navy}22,${C.earth}33)`,border:`2px dashed ${C.sand}`,borderRadius:12,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:8,padding:16,textAlign:"center"}}>
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke={C.earth}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <p style={{color:C.earth,fontSize:12,fontStyle:"italic",maxWidth:200}}>{alt}</p>
+        </div>
+      );
+    }
+
+    function StepsGraphic(){
+      return(
+        <div style={{
+          background: `linear-gradient(135deg,${C.navy}0A,${C.earth}22)`,
+          border: `1px solid ${C.sand}`,
+          borderRadius: 16,
+          padding: "16px",
+          overflow: "hidden",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+          width: "100%", 
+          maxWidth: "600px", // 📌 INCREASE THIS to make the whole box wider
+          margin: "0 auto"
+        }}>
+      <video 
+        controls 
+        autoPlay 
+        muted 
+        loop 
+        style={{
+          width: "100%",
+          height: "400px", // 📌 SET A SPECIFIC HEIGHT if you want it taller
+          borderRadius: 10,
+          display: "block",
+          objectFit: "cover", // Use 'contain' if you don't want the video cropped
+        }}
+      >
+            {/* 📌 Replace 'videos/service.mp4' with your actual video path */}
+            <source src="images/carry_water.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div style={{display:"flex",justifyContent:"center",marginTop:10}}>
+            <span style={{color:C.earth,fontSize:11,letterSpacing:1,fontFamily:"sans-serif",fontWeight:700}}>
+              MOVING LOADS MANUALLY UP THE MOUNT
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    const timeline=[
+      {period:"1989–1991",title:"The Beginning",icon:"🕊️",images: ["images/banner.jpg"],highlight:false,stat:null,desc:"A small band of 15-year-old friends who sang Christmas carols together turned their friendship into service."},
+      {period:"1992",title:"Moving Up the Mount",icon:"🪜",images: ["images/ourplace_00.png"],highlight:false,stat:{label:"First water packets",value:1500,suffix:""},desc:"The association moved its station to the mid-stairs, requiring members to carry every packet by hand up the steep incline."},
+      {period:"1993–1994",title:"Growing Reach",icon:"📦",images: [],highlight:false,stat:{label:"Packets @ ₹0.35 each",value:1700,suffix:""},desc:"Water packets cost just 35 paise each. Distribution grew from 1,600 to 1,700 packets."},
+      {period:"1995–1997",title:"Milestone: 2,000 Packets",images: [],icon:"🏆",highlight:false,stat:{label:"Packets reached",value:2000,suffix:"+"},desc:"Price rose to 50 paise. The association crossed the 2,000-packet milestone."},
+      {period:"1998–2001",title:"Expanding Scale",icon:"💧",images: [],highlight:false,stat:{label:"Packets @ ₹0.60–0.80",value:3500,suffix:"+"},desc:"With packets at 60–80 paise, the count climbed. The brotherhood grew to match the demand."},
+      {period:"2002–2005",title:"Hot Cross Buns Arrive",icon:"🥖",images: ["images/group_16.jpg"],highlight:false,stat:{label:"Water packets + buns introduced",value:4400,suffix:""},desc:"200 extra water packets added each year. Custom-made hot cross buns were introduced."},
+      {period:"2006–2018",title:"Steady Brotherhood Growth",icon:"📈",images: ["images/ourplace_10.jpg","images/water_18.jpg","images/water1_18.jpg","images/barel_16.jpg"],highlight:false,stat:{label:"Packets at peak",value:7600,suffix:""},desc:"From 4,500 to 7,600 water packets across these years. Buns grew from 600 to 1,000 pieces."},
+      {period:"2020",title:"The COVID Pivot",icon:"🌾",images: ["images/van_20.jpg","images/rice1_20.jpg","images/rice2_20.jpg","images/rice3_20.jpg","images/rice4_20.jpg","images/rice5_20.jpg","images/rice6_20.jpg","images/rice7_20.jpg","images/rice8_20.jpg","images/rice9_20.jpg","images/rice10_20.jpg"],highlight:true,stat:{label:"kg of rice distributed",value:780,suffix:"kg"},desc:"Good Friday mass was cancelled. The association distributed 780 kg of rice to the sanitation workers and people experiencing hardship."},
+      {period:"2021",title:"Modernizing our Service",icon:"♻️",images:["images/water_21.jpeg","images/water1_21.jpeg","images/mass_19.jpg"],highlight:false,stat:{ label: "250ml Bottles", value:1680, suffix:"" },desc:"A significant shift: we officially switched from water packets to bottles."},
+      {period:"2022",title:"Steady Recovery",icon:"💧",images:["images/bun_22.jpg"],highlight:false,stat:{ label: "300ml Bottles", value:1200, suffix:"" },desc:"As crowds returned, we provided 1,200 bottles along with 2,000 buns and 50 bread packets."},
+      {period:"2023",title:"Increasing the Volume",icon:"🌊",images:["images/ourplace_22.jpg","images/bun_23.jpg"],highlight:false,stat:{ label: "Total Bottles", value:1920, suffix:"" },desc:"We scaled up to 1,800 bottles of 500ml and 120 bottles of 200ml."},
+      {period:"2024",title:"A Record Years",icon:"⭐",images: ["images/water_24.jpg","images/bun_24.jpg"],highlight:false,stat:{label:"Bottles distributed",value:4008,suffix:""},desc:"4,008 bottles of chilled water, 4,000 buns, and 75 bread packets carried up every step."},
+      {period:"2025",title:"Present Day",icon:"🙏",images: ["images/water_25.jpeg","images/status_25.jpeg","images/place_25.jpeg","images/group_25.jpeg",],highlight:true,stat:{label:"Bottles this year",value:6000,suffix:"+"},desc:"Today the association distributes 6,000 bottles of water and 5,000+ buns."},
+    ];
+
+    const PAGES=["Mission","Timeline","Brotherhood"];
+
+    function Nav({page,setPage}){
+      const [open,setOpen]=useState(false);
+      return(
+        <>
+          <nav style={{position:"sticky",top:0,zIndex:100,background:`${C.navy}F5`,backdropFilter:"blur(12px)",borderBottom:`1px solid ${C.sky}33`,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 24px",height:64}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:38,height:38,borderRadius:"50%",border: `1.5px solid ${C.gold}88`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,boxShadow: `0 0 10px ${C.gold}22`}}>
+                <img src="images/logo.png" alt="Logo" style={{width: 28, height: 28, borderRadius: "50%"}}/>
+              </div>
+              <span style={{color:C.white,fontWeight:700,fontSize:15,letterSpacing:1}}>Home</span>
+            </div>
+            <div className="desktop-nav" style={{display:"flex",gap:8}}>
+              {PAGES.map((p,i)=>(
+                <button key={p} onClick={()=>setPage(i)} style={{background:page===i?C.gold:"transparent",color:page===i?C.navy:C.sky,border:`1px solid ${page===i?C.gold:C.sky+"55"}`,borderRadius:6,padding:"6px 18px",cursor:"pointer",fontFamily:"'Georgia',serif",fontSize:13,letterSpacing:1,transition:"all 0.2s"}}>{p}</button>
+              ))}
+            </div>
+            <button className="hamburger" onClick={()=>setOpen(!open)} style={{display:"none",background:"none",border:"none",color:C.white,fontSize:22,cursor:"pointer"}}>☰</button>
+          </nav>
+          {open&&(<div style={{position:"fixed",top:64,left:0,right:0,zIndex:99,background:C.navy,padding:16,display:"flex",flexDirection:"column",gap:8}}>
+            {PAGES.map((p,i)=>(<button key={p} onClick={()=>{setPage(i);setOpen(false);}} style={{background:page===i?C.gold:"transparent",color:page===i?C.navy:C.white,border:"none",borderRadius:6,padding:"10px 16px",cursor:"pointer",fontFamily:"'Georgia',serif",fontSize:15,textAlign:"left"}}>{p}</button>))}
+          </div>)}
+        </>
+      );
+    }
+
+    function LandingPage(){
+      const [sy,setSy]=useState(0);
+      useEffect(()=>{const h=()=>setSy(window.scrollY);window.addEventListener("scroll",h,{passive:true});return()=>window.removeEventListener("scroll",h);},[]);
+      return(
+        <div>
+          <section style={{background:`linear-gradient(160deg,${C.navy} 0%,#0D3270 55%,${C.earth}88 100%)`,minHeight:"92vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"80px 24px 60px",textAlign:"center",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:"50%",left:"50%",transform:`translate(-50%,-50%) translateY(${sy*0.3}px)`,fontSize:320,opacity:0.04,color:C.white,userSelect:"none",lineHeight:1}}>✝</div>
+            <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`${C.gold}22`,border:`1px solid ${C.gold}55`,borderRadius:20,padding:"6px 18px",marginBottom:24}}>
+              <span style={{color:C.gold,fontSize:12,letterSpacing:2,fontFamily:"sans-serif",fontStyle:"normal"}}>SINCE 1989 · ST. THOMAS MOUNT · CHENNAI</span>
+            </div>
+            <h1 style={{color:C.white,fontSize:"clamp(2.2rem,6vw,4.5rem)",fontWeight:700,lineHeight:1.15,marginBottom:16,maxWidth:800,textShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
+              St. Joseph<br/><span style={{color:C.gold}}>Youth Association</span>
+            </h1>
+            <p style={{color:`${C.sky}CC`,fontSize:"clamp(1rem,2.5vw,1.25rem)",maxWidth:560,lineHeight:1.7,marginBottom:40}}>
+              Thirty-six years of climbing every step—so pilgrims on Good Friday never go thirsty.
+            </p>
+             {/*📌 HERO IMAGE: replace ImgBox with <img src="images/hero.jpg" ... /> */}
+            <div className="hero-img-wrap">
+             {/* <ImgBox alt="Members carrying crates of water bottles up the steep steps of St. Thomas Mount" h={320}/>*/}
+             <img src="images/banner.jpg" alt="St.Joseph Youth Association Logo" style={{width:"100%", borderRadius:16, height:320, objectFit:"cover"}} />
+             </div>
+           
+            <div style={{marginTop:48,color:`${C.sky}88`,fontSize:13,letterSpacing:2,animation:"bounce 2s infinite"}}>↓ SCROLL</div>
+          </section>
+
+          <section style={{background:C.navy,padding:"48px 24px",display:"flex",flexWrap:"wrap",justifyContent:"center",gap:48}}>
+            {[{label:"Years of Service",val:36,suffix:""},{label:"Bottles This Year",val:6000,suffix:"+"},{label:"Buns Distributed",val:5000,suffix:"+"}].map(s=>(
+              <div key={s.label} style={{textAlign:"center"}}>
+                <div style={{color:C.gold,fontSize:"clamp(2rem,5vw,3rem)",fontWeight:700}}><AnimCount target={s.val} suffix={s.suffix}/></div>
+                <div style={{color:`${C.sky}99`,fontSize:12,letterSpacing:2,marginTop:4,fontFamily:"sans-serif"}}>{s.label.toUpperCase()}</div>
+              </div>
+            ))}
+          </section>
+
+          <section style={{maxWidth:1100,margin:"0 auto",padding:"80px 24px"}}>
+            <FadeIn>
+              <div className="two-col" style={{display:"flex",gap:48,alignItems:"center"}}>
+                <div style={{flex:"1 1 300px"}}>
+                  <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>THE PHYSICAL SACRIFICE</span>
+                  <h2 style={{color:C.navy,fontSize:"clamp(1.6rem,3.5vw,2.5rem)",margin:"12px 0 20px",lineHeight:1.25}}>Every Crate.<br/>Every Step.<br/>Every Year.</h2>
+                  <p style={{color:"#374151",lineHeight:1.8,fontSize:"1.05rem",marginBottom:20}}>Every single bottle and bread packet is moved manually up the steep inclined steps to our mid-stairs station. No conveyor belts. No outside labour. Just the hands and shoulders of our members—carrying the weight of faith up the mount.</p>
+                  <p style={{color:C.muted,lineHeight:1.8}}>From early morning until the sun sets, members stand ready to distribute chilled water to thousands of pilgrims. As Good Friday mass concludes, buns and bread are hauled up for those descending after a day of prayer and fasting.</p>
+                </div>
+                <div style={{flex:"1 1 280px"}}><StepsGraphic/></div>
+              </div>
+            </FadeIn>
+          </section>
+
+          <section style={{background:C.navy,padding:"80px 24px"}}>
+            <div style={{maxWidth:1100,margin:"0 auto"}}>
+              <FadeIn>
+                <div className="two-col" style={{display:"flex",gap:48,alignItems:"center"}}>
+                  {/* 📌 ORIGIN PHOTO: replace with <img src="images/founding.jpg" .../>
+                  <div style={{flex:"1 1 280px"}}><ImgBox alt="Founding members as young men in the late 1980s" h={260}/></div>
+                 <img src="images/ourplace_00.png" alt="Founding Members" style={{width:"100%", borderRadius:3, height:150, objectFit:"cover"}} /> 
+                 */} 
+                 <div style={{flex:"1 1 300px"}}>
+                    <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>OUR ORIGIN STORY</span>
+                    <h2 style={{color:C.white,fontSize:"clamp(1.6rem,3.5vw,2.4rem)",margin:"12px 0 20px",lineHeight:1.25}}>Started by 15-Year-Olds<br/><span style={{color:C.sky}}>in 1989</span></h2>
+                    <p style={{color:`${C.white}CC`,lineHeight:1.8,marginBottom:16}}>The St. Joseph Youth Association was started by school students and young workers living near the St. Thomas Mount shrine. It began as a small group of friends who gathered to sing Christmas carols—and grew into something far greater.</p>
+                    <p style={{color:`${C.sky}AA`,lineHeight:1.8}}>In 1989, these teenagers saw exhausted pilgrims climbing the mount and decided to act. With homemade buttermilk, hand-washed glasses, and boundless spirit, a 36-year tradition was born.</p>
+                  </div>
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+
+          <section style={{padding:"80px 24px",background:C.cream}}>
+            <div style={{maxWidth:800,margin:"0 auto",textAlign:"center"}}>
+              <FadeIn>
+                <div style={{background:`linear-gradient(135deg,${C.earth}15,${C.gold}15)`,border:`1px solid ${C.gold}44`,borderRadius:20,padding:"52px 40px"}}>
+                  <div style={{fontSize:48,marginBottom:16}}>🌿</div>
+                  <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>OUR ENVIRONMENTAL PLEDGE</span>
+                  <h2 style={{color:C.navy,fontSize:"clamp(1.5rem,3vw,2.2rem)",margin:"16px 0 20px"}}>"Service to God is Service to His House"</h2>
+                  <p style={{color:"#374151",lineHeight:1.85,fontSize:"1.05rem"}}>Once the distribution is complete, our work is not over. Our members personally walk the shrine grounds to collect discarded water bottle and piece of trash in our area. We carry the waste back down to the church gate for proper disposal—leaving the holy site as pristine as we found it.</p>
+                  <p style={{color:C.muted,lineHeight:1.7,marginTop:16,fontStyle:"italic"}}>While we cannot clean the entire mount, we take full responsibility for our station—because caring for His house is an act of worship.</p>
+                </div>
+              </FadeIn>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    function TimelineItem({ item, idx, onPhotoClick }) {
+      const ref = useRef(); const v = useInView(ref, 0.1);
+
+      const handleClick = () => {
+        // If there are images, open the gallery
+        if (item.images && item.images.length > 0 && item.images[0] !== "") {
+          onPhotoClick(item);
+        } else {
+          // If no images, show the little pop-up alert
+          alert("Please click on the next timeline card for images.");
+        }
+      };
+
+      return (
+        <div ref={ref} 
+          onClick={handleClick} 
+          style={{
+            display: "flex", gap: 20, marginBottom: 40, cursor: "pointer", 
+            opacity: v ? 1 : 0, transform: v ? "translateX(0)" : "translateX(-30px)",
+            transition: `all 0.6s ease ${idx * 60}ms`
+          }}
+          className="timeline-card"
+        >
+          <div style={{ flexShrink: 0, width: 56, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: "50%",
+              background: item.highlight ? `linear-gradient(135deg,${C.gold},${C.earth})` : `linear-gradient(135deg,${C.navy},${C.blue})`,
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, position: "relative", zIndex: 1
+            }}>{item.icon}</div>
+          </div>
+          <div style={{
+            flex: 1, background: item.highlight ? `linear-gradient(135deg,${C.gold}15,${C.earth}10)` : C.white,
+            border: `1px solid ${item.highlight ? C.gold + "55" : C.sand}`, borderRadius: 14, padding: "20px 24px",
+            transition: "transform 0.2s ease",
+            boxShadow: item.highlight ? `0 4px 24px ${C.gold}22` : "0 2px 12px rgba(0,0,0,0.06)"
+          }}
+          onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+          onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+          >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "baseline", marginBottom: 8 }}>
+              <span style={{ background: C.navy, color: C.gold, fontSize: 11, letterSpacing: 2, padding: "3px 10px", borderRadius: 20, fontFamily: "sans-serif" }}>{item.period}</span>
+              {item.highlight && <span style={{ background: C.gold, color: C.navy, fontSize: 10, letterSpacing: 1, padding: "3px 10px", borderRadius: 20, fontFamily: "sans-serif", fontWeight: 700 }}>MILESTONE</span>}
+              <span style={{ color: C.earth, fontSize: 10, fontWeight: 700 }}>🔍 CLICK FOR PHOTOS</span>
+            </div>
+            
+            <h3 style={{ color: C.navy, fontSize: "1.15rem", margin: "4px 0 10px" }}>{item.title}</h3>
+            
+            <p style={{ color: "#374151", lineHeight: 1.75, fontSize: "0.95rem", marginBottom: item.stat ? 16 : 0 }}>{item.desc}</p>
+            
+            {/* 📌 Added statistics display back in */}
+            {item.stat && (
+              <div style={{ display: "inline-flex", gap: 8, alignItems: "baseline", background: `${C.navy}0A`, borderRadius: 8, padding: "10px 16px" }}>
+                <span style={{ color: C.navy, fontSize: "1.6rem", fontWeight: 700 }}>
+                  <AnimCount target={item.stat.value} suffix={item.stat.suffix} />
+                </span>
+                <span style={{ color: C.muted, fontSize: 12, fontFamily: "sans-serif" }}>{item.stat.label}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // this for the photo to pop up
+    function ImageModal({ item, onClose }) {
+      const [index, setIndex] = React.useState(0);
+      
+      // Reset index to 0 whenever a new item is selected
+      React.useEffect(() => {
+        setIndex(0);
+      }, [item]);
+
+      if (!item || !item.images || item.images.length === 0) return null;
+
+      const images = item.images;
+      const next = (e) => { e.stopPropagation(); setIndex((index + 1) % images.length); };
+      const prev = (e) => { e.stopPropagation(); setIndex((index - 1 + images.length) % images.length); };
+
+      return (
+        <div onClick={onClose} style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(11, 37, 69, 0.98)", zIndex: 1000,
+          display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out"
+        }}>
+          <div style={{ position: "relative", width: "90%", maxWidth: "900px", textAlign: "center" }} onClick={e => e.stopPropagation()}>
+            <button onClick={onClose} style={{ position: "absolute", top: -50, right: 0, background: "none", border: "none", color: "white", fontSize: "30px", cursor: "pointer" }}>✕</button>
+
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <img src={images[index]} alt={item.title} style={{ maxWidth: "100%", maxHeight: "75vh", borderRadius: "12px", border: "4px solid white", boxShadow: "0 20px 50px rgba(0,0,0,0.5)" }} />
+              
+              {images.length > 1 && (
+                <>
+                  <button onClick={prev} style={{ position: "absolute", left: "-60px", top: "50%", background: "none", border: "none", color: "white", fontSize: "40px", cursor: "pointer" }}>❮</button>
+                  <button onClick={next} style={{ position: "absolute", right: "-60px", top: "50%", background: "none", border: "none", color: "white", fontSize: "40px", cursor: "pointer" }}>❯</button>
+                </>
+              )}
+            </div>
+
+            <div style={{ marginTop: "20px" }}>
+              <p style={{ color: "white", fontSize: "1.2rem", fontFamily: "Georgia" }}>{item.title}</p>
+              {images.length > 1 && (
+                <p style={{ color: "#4FC3F7", fontSize: "0.9rem", marginTop: "5px" }}>{index + 1} / {images.length}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function TimelinePage({ setSelectedItem }){
+     {/* const [selectedItem, setSelectedItem] = useState(null);*/}
+
+      return(
+        <div>
+          {/*<ImageModal 
+            item={selectedItem} 
+            onClose={() => setSelectedItem(null)} 
+          />*/}
+
+          <section style={{background:`linear-gradient(160deg,${C.navy} 0%,#0D3270 100%)`,padding:"80px 24px 60px",textAlign:"center"}}>
+            <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>THE JOURNEY</span>
+            <h1 style={{color:C.white,fontSize:"clamp(2rem,5vw,3.5rem)",margin:"16px 0 16px",lineHeight:1.2}}>36 Years of<br/><span style={{color:C.sky}}>Climbing Higher</span></h1>
+            <p style={{color:`${C.sky}BB`,maxWidth:560,margin:"0 auto",lineHeight:1.7}}>From 1,500 water packets at 35 paise to 6,000 bottles today—every number below represents pilgrims served, steps climbed, and a community that showed up year after year.</p>
+          </section>
+
+          <section style={{maxWidth:800,margin:"0 auto",padding:"60px 24px 80px"}}>
+            <div style={{position:"relative"}}>
+              <div style={{position:"absolute",left:28,top:0,bottom:0,width:2,background:`linear-gradient(to bottom,${C.gold},${C.blue},${C.gold})`,opacity:0.4}}/>
+              {timeline.map((item,idx)=>(
+                <TimelineItem 
+                  key={idx} 
+                  item={item} 
+                  idx={idx} 
+                  onPhotoClick={(clickedItem) => setSelectedItem(clickedItem)} 
+                />
+              ))}
+            </div>
+          </section>
+
+          <section style={{background:C.navy,padding:"72px 24px"}}>
+            <div style={{maxWidth:1000,margin:"0 auto",textAlign:"center"}}>
+              <FadeIn>
+                <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>THE HANDS BEHIND THE MISSION</span>
+                <h2 style={{color:C.white,fontSize:"clamp(1.6rem,3.5vw,2.4rem)",margin:"16px 0 12px"}}>Our Contributors</h2>
+                <p style={{color:`${C.sky}99`,maxWidth:560,margin:"0 auto 48px",lineHeight:1.7}}>The success of our mission relies on the kindness of our contributors. While our members and friends take care of the physical task of moving every bottle and bun to the station, it is the generous financial support from across the region that allows us to provide these supplies and perform a meaningful service every year.</p>
+              </FadeIn>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:16}}>
+                {["Local Parishioners","St. Thomas Mount Families","Alumni Members","Youth Volunteers","Legacy Contributors"].map((name,i)=>(
+                  <FadeIn key={name} delay={i*60}>
+                    <div style={{background:`${C.white}08`,border:`1px solid ${C.sky}22`,borderRadius:12,padding:"20px 16px",textAlign:"center"}}>
+                      <div style={{fontSize:28,marginBottom:10}}>🤲</div>
+                      <p style={{color:C.white,fontSize:"0.85rem",lineHeight:1.5}}>{name}</p>
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
+              <FadeIn delay={500}><p style={{color:`${C.gold}88`,marginTop:40,fontStyle:"italic",fontSize:"0.9rem"}}>"We provide the effort, and our contributors provide the means. Together, we serve."</p></FadeIn>
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    function BrotherhoodPage({ onPhotoClick }){
+      return(
+        <div>
+          <section style={{background:`linear-gradient(160deg,${C.earth} 0%,${C.navy} 100%)`,padding:"80px 24px 60px",textAlign:"center"}}>
+            <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>THE FAMILY</span>
+            <h1 style={{color:C.white,fontSize:"clamp(2rem,5vw,3.5rem)",margin:"16px 0 16px",lineHeight:1.2}}>The <span style={{color:C.gold}}>Brotherhood</span></h1>
+            <p style={{color:`${C.white}BB`,maxWidth:540,margin:"0 auto",lineHeight:1.7}}>A family of volunteers bound not by contract but by love—for their faith, their community, and each other.</p>
+          </section>
+          <section style={{maxWidth:1000,margin:"0 auto",padding:"72px 24px"}}>
+            <FadeIn>
+              <div className="two-col" style={{display:"flex",gap:48,alignItems:"center"}}>
+                <div style={{flex:"1 1 300px"}}>
+                  <span style={{color:C.gold,fontSize:12,letterSpacing:3,fontFamily:"sans-serif"}}>MULTI-GENERATIONAL LEGACY</span>
+                  <h2 style={{color:C.navy,fontSize:"clamp(1.5rem,3vw,2.2rem)",margin:"12px 0 20px",lineHeight:1.3}}>The Boys of '89 Are Now<br/>Fathers Watching Their Sons and Daughters</h2>
+                  <p style={{color:"#374151",lineHeight:1.85,marginBottom:20}}>What began in 1989 with a small group of 15-year-olds has now blossomed into a multi-generational mission. Many of the "boys" who carried buttermilk in the 80s are now fathers, watching their own children carry the water bottles of today.</p>
+                  <p style={{color:C.muted,lineHeight:1.8}}>This transition ensures that the spirit of the association never fades—the energy of the youth and the wisdom of the elders work hand-in-hand, year after year.</p>
+                </div>
+                {/* 📌 GENERATIONS PHOTO: replace with <img src="images/generations.jpg" .../> */}
+                <div style={{flex:"1 1 280px"}}>
+                  {/* <ImgBox alt="Founding members and their children working side by side at the distribution station" h={280}/> */}
+                  <img src="images/old_group.jpeg" style={{width:"100%", borderRadius:16, height:320, objectFit:"cover"}}/>
+                  </div>
+              </div>
+            </FadeIn>
+          </section>
+          
+          <section style={{background:`${C.navy}0A`, padding:"60px 24px"}}>
+  <div style={{maxWidth:1100, margin:"0 auto"}}>
+    <FadeIn>
+      <h2 style={{color:C.navy, fontSize:"clamp(1.4rem,3vw,2rem)", textAlign:"center", marginBottom:40}}>
+        The Family Grid
+      </h2>
+    </FadeIn>
+    
+    <div style={{
+      display:"grid", 
+      gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", 
+      gap:20
+    }}>
+      {/* 📌 This card now properly opens the image array when clicked */}
+      <FadeIn delay={0}>
+        <div 
+          onClick={() => onPhotoClick({ 
+            title: "Association Members at the Shrine Steps", 
+            images: ["images/BH1.jpg","images/BH4.jpg", "images/BH5.jpg", "images/BH6.jpg",
+            "images/BH7.jpg", "images/BH8.jpg", "images/BH9.jpg"] 
+          })} 
+          style={{ 
+            height: 420, 
+            overflow: 'hidden', 
+            borderRadius: 12, 
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            cursor: "pointer",
+            position: "relative" // Needed for the "+ View Gallery" text
+          }}
+        >
+          <img 
+            src="images/BH5.jpg" 
+            alt="Association Members at the shrine steps" 
+            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+          />
+          <div style={{position:"absolute", bottom:10, right:10, background:"rgba(0,0,0,0.6)", color:"white", padding:"4px 8px", borderRadius:4, fontSize:10}}>
+            + View Gallery
+          </div>
+        </div>
+      </FadeIn>
+    </div>
+  </div>
+</section>
+
+          <section style={{padding:"72px 24px",background:C.cream}}>
+            <div style={{maxWidth:1000,margin:"0 auto"}}>
+              <FadeIn><h2 style={{color:C.navy,textAlign:"center",fontSize:"clamp(1.4rem,3vw,2rem)",marginBottom:48}}>What We Stand For</h2></FadeIn>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:24}}>
+                {[{icon:"🤝",title:"Brotherhood",text:"We are more than just a distribution team; we are a family. Bound by faith and friendship for over three decades, our association remains a consistent source of support and community spirit."},
+                 {icon:"💪",title:"Collective Action",text:"Our service is a shared journey. While our members lead the way, friends and pilgrims often join us to lift crates, turning the work into a beautiful act of collective kindness for everyone."},
+                 {icon:"🙏",title:"Devoted Stewardship",text:"Service to God includes caring for His house. We find joy in ensuring the shrine remains pristine, looking after the holy grounds with a full heart and a quiet, sincere spirit of devotion."}].map(({icon,title,text},i)=>(
+                  <FadeIn key={title} delay={i*80}>
+                    <div style={{background:C.white,borderRadius:16,padding:"28px 24px",border:`1px solid ${C.sand}`,boxShadow:"0 2px 16px rgba(0,0,0,0.06)"}}>
+                      <div style={{fontSize:36,marginBottom:14}}>{icon}</div>
+                      <h3 style={{color:C.navy,fontSize:"1.1rem",marginBottom:10}}>{title}</h3>
+                      <p style={{color:C.muted,lineHeight:1.75,fontSize:"0.95rem"}}>{text}</p>
+                    </div>
+                  </FadeIn>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section style={{background:`linear-gradient(135deg,${C.navy},${C.earth})`,padding:"80px 24px",textAlign:"center"}}>
+            <FadeIn>
+              <h2 style={{color:C.white,fontSize:"clamp(1.8rem,4vw,2.8rem)",marginBottom:16}}>Join the Brotherhood</h2>
+              <p style={{color:`${C.white}BB`,maxWidth:500,margin:"0 auto 40px",lineHeight:1.7}}>If you feel the call to serve—to carry the load, climb the steps, and give a thirsty pilgrim water—reach out. There is always room for one more pair of hands.</p>
+              <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center"}}>
+                {/* 📌 UPDATE EMAIL below */}
+                <a href="mailto:stjosephyouth@example.com" style={{background:C.gold,color:C.navy,padding:"14px 36px",borderRadius:8,fontWeight:700,textDecoration:"none",fontFamily:"'Georgia',serif",fontSize:"1rem",display:"inline-block"}}>Contact Us</a>
+              </div>
+              <p style={{color:`${C.gold}88`,marginTop:48,fontSize:"0.85rem",letterSpacing:1}}>ST. JOSEPH YOUTH ASSOCIATION · ST. THOMAS MOUNT · CHENNAI · EST. 1989</p>
+            </FadeIn>
+          </section>
+        </div>
+      );
+    }
+
+    function App(){
+      const [page, setPage] = useState(0);
+      const [selectedItem, setSelectedItem] = useState(null); // 📌 State is now here
+
+      return(
+        <div>
+          <Nav page={page} setPage={setPage}/>
+          
+          {/* 📌 The Modal now lives here so it can show images from ANY page */}
+          <ImageModal 
+            item={selectedItem} 
+            onClose={() => setSelectedItem(null)} 
+          />
+
+          {page === 0 && <LandingPage/>}
+          {page === 1 && <TimelinePage setSelectedItem={setSelectedItem}/>}
+          {page === 2 && <BrotherhoodPage onPhotoClick={(item) => setSelectedItem(item)} />}
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>
