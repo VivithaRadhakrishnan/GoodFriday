@@ -117,7 +117,7 @@
       {period:"2022",title:"Steady Recovery",icon:"💧",images:["images/bun_22.jpg"],highlight:false,stat:{ label: "300ml Bottles", value:1200, suffix:"" },desc:"As crowds returned, we provided 1,200 bottles along with 2,000 buns and 50 bread packets."},
       {period:"2023",title:"Increasing the Volume",icon:"🌊",images:["images/ourplace_22.jpg","images/bun_23.jpg"],highlight:false,stat:{ label: "Total Bottles", value:1920, suffix:"" },desc:"We scaled up to 1,800 bottles of 500ml and 120 bottles of 200ml."},
       {period:"2024",title:"A Record Years",icon:"⭐",images: ["images/water_24.jpg","images/bun_24.jpg"],highlight:false,stat:{label:"Bottles distributed",value:4008,suffix:""},desc:"4,008 bottles of chilled water, 4,000 buns, and 75 bread packets carried up every step."},
-      {period:"2025",title:"Present Day",icon:"🙏",images: ["images/water_25.jpeg","images/status_25.jpeg","images/place_25.jpeg","images/group_25.jpeg",],highlight:true,stat:{label:"Bottles this year",value:6000,suffix:"+"},desc:"Today the association distributes 6,000 bottles of water and 5,000+ buns."},
+      {period:"2025",title:"Present Day",icon:"🙏",images: ["images/water_25.jpeg","images/status_25.jpeg","images/place_25.jpeg","images/group_25.jpeg","images/bun_25.jpg"],highlight:true,stat:{label:"Bottles this year",value:6000,suffix:"+"},desc:"Today the association distributes 6,000 bottles of water and 5,000+ buns."},
     ];
 
     const PAGES=["Mission","Timeline","Brotherhood"];
@@ -153,7 +153,9 @@
       return(
         <div>
           <section style={{background:`linear-gradient(160deg,${C.navy} 0%,#0D3270 55%,${C.earth}88 100%)`,minHeight:"92vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"80px 24px 60px",textAlign:"center",position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",top:"50%",left:"50%",transform:`translate(-50%,-50%) translateY(${sy*0.3}px)`,fontSize:320,opacity:0.04,color:C.white,userSelect:"none",lineHeight:1}}>✝</div>
+            {/*<div style={{position:"absolute",top:"50%",left:"50%",transform:`translate(-50%,-50%) translateY(${sy*0.3}px)`,fontSize:320,opacity:0.04,color:C.white,userSelect:"none",lineHeight:1}}>✝</div>*/}
+            {/* 📌 Background Image Layer (Replaces the Cross) */}
+            <div style={{position: "absolute",top: 0,left: 0,width: "100%",height: "100%",backgroundImage: "url('images/oldarch1.jpg')", backgroundSize: "cover",backgroundPosition: "center",opacity: 0.07, userSelect: "none",pointerEvents: "none",transform: `translateY(${sy * 0.3}px)`,zIndex: 0}} />
             <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`${C.gold}22`,border:`1px solid ${C.gold}55`,borderRadius:20,padding:"6px 18px",marginBottom:24}}>
               <span style={{color:C.gold,fontSize:12,letterSpacing:2,fontFamily:"sans-serif",fontStyle:"normal"}}>SINCE 1989 · ST. THOMAS MOUNT · CHENNAI</span>
             </div>
@@ -486,11 +488,16 @@
             <FadeIn>
               <h2 style={{color:C.white,fontSize:"clamp(1.8rem,4vw,2.8rem)",marginBottom:16}}>Join the Brotherhood</h2>
               <p style={{color:`${C.white}BB`,maxWidth:500,margin:"0 auto 40px",lineHeight:1.7}}>If you feel the call to serve—to carry the load, climb the steps, and give a thirsty pilgrim water—reach out. There is always room for one more pair of hands.</p>
-              <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center"}}>
-                {/* 📌 UPDATE EMAIL below */}
-                <a href="mailto:stjosephyouth@example.com" style={{background:C.gold,color:C.navy,padding:"14px 36px",borderRadius:8,fontWeight:700,textDecoration:"none",fontFamily:"'Georgia',serif",fontSize:"1rem",display:"inline-block"}}>Contact Us</a>
-              </div>
-              <p style={{color:`${C.gold}88`,marginTop:48,fontSize:"0.85rem",letterSpacing:1}}>ST. JOSEPH YOUTH ASSOCIATION · ST. THOMAS MOUNT · CHENNAI · EST. 1989</p>
+                <div style={{display:"flex",flexWrap:"wrap",gap:16,justifyContent:"center"}}>
+                   {/* 📌 UPDATE EMAIL and INSTAGRAM below */}
+                 {/* <a href="mailto:stjosephyouth@example.com" style={{background:C.gold,color:C.navy,padding:"14px 36px",borderRadius:8,fontWeight:700,textDecoration:"none",fontFamily:"'Georgia',serif",fontSize:"1rem",display:"inline-block",transition:"transform 0.2s"}} 
+                  onMouseOver={(e)=>e.currentTarget.style.transform="scale(1.05)"} 
+                  onMouseOut={(e)=>e.currentTarget.style.transform="scale(1)"}>Contact Us</a>*/}
+                  <a href="https://www.instagram.com/_goodfriday_club_/" target="_blank" rel="noopener noreferrer" style={{background:C.gold,color:C.navy,padding:"14px 36px",borderRadius:8,fontWeight:700,textDecoration:"none",fontFamily:"'Georgia',serif",fontSize:"1rem",display:"inline-block",transition:"transform 0.2s"}}
+                  onMouseOver={(e)=>e.currentTarget.style.transform="scale(1.05)"} 
+                  onMouseOut={(e)=>e.currentTarget.style.transform="scale(1)"}>Follow on Instagram</a>
+                </div>
+              <p style={{color:`${C.gold}88`,marginTop:48,fontSize:"0.85rem",letterSpacing:1}}>ST. JOSEPH YOUTH ASSOCIATION · ST. THOMAS MOUNT · CHENNAI ·</p>
             </FadeIn>
           </section>
         </div>
