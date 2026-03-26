@@ -1,6 +1,6 @@
 # St. Joseph Youth Association Website
 
-A single-file website for the SJYA — no build tools, no Node.js, no npm.
+A single-file website for the Assoication — no build tools, no Node.js, no npm.
 Just open `index.html` in any browser.
 
 ---
